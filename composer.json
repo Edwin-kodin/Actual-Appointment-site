@@ -1,0 +1,23 @@
+{
+    "name": "alloteyedwin/appointment-site",
+    "description": "Appointment booking site",
+
+    "autoload": {
+        "psr-4": {
+            "Alloteyedwin\\AppointmentSite\\": "src/"
+        }
+    },
+
+    "scripts": {
+        "dev": "php -S localhost:8000"
+    },
+
+    "authors": [
+        {
+            "name": "Edwin-Kodin",
+            "email": "niiadotei724@gmail.com"
+        }
+    ],
+
+    "require": {}
+}
