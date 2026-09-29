@@ -1,5 +1,8 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToOne, JoinColumn, OneToMany } from 'typeorm';
 import { User } from '../users/user.entity.js';
+import { Service } from './service.entity.js';
+import { PortfolioPost } from './portfolio-post.entity.js';
+import { BusinessHour } from './business-hour.entity.js';
 
 @Entity('providers')
 export class Provider {
@@ -48,4 +51,13 @@ export class Provider {
 
   @UpdateDateColumn()
   updated_at: Date;
+
+  @OneToMany(() => Service, service => service.provider, { cascade: true })
+  services: Service[];
+
+  @OneToMany(() => PortfolioPost, post => post.provider, { cascade: true })
+  portfolio: PortfolioPost[];
+
+  @OneToMany(() => BusinessHour, hour => hour.provider, { cascade: true })
+  business_hours: BusinessHour[];
 }

@@ -1,24 +1,59 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Star, MapPin, Clock, ArrowLeft, Check, Calendar as CalendarIcon, Heart, MessageSquare } from 'lucide-react';
 import './ProviderProfile.css';
 
-const services = [
-  { id: 1, name: 'Signature Haircut', duration: '45 min', price: '₵450', description: 'Premium haircut with hot towel finish.' },
-  { id: 2, name: 'Beard Trim & Line Up', duration: '30 min', price: '₵250', description: 'Detailed beard sculpting with straight razor.' },
-  { id: 3, name: 'The Full Experience', duration: '1 hr 15 min', price: '₵650', description: 'Haircut, beard trim, hot towel shave, and styling.' },
-  { id: 4, name: 'Kids Haircut', duration: '30 min', price: '₵300', description: 'For children under 12.' }
-];
+const formatTime = (timeString) => {
+  if (!timeString) return '';
+  const [hours, minutes] = timeString.split(':');
+  const h = parseInt(hours, 10);
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  const displayH = h % 12 || 12;
+  return `${displayH}:${minutes} ${ampm}`;
+};
 
 function ProviderProfile() {
   const { id } = useParams();
+  const [provider, setProvider] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  
   const [selectedService, setSelectedService] = useState(null);
   const [showBookingModal, setShowBookingModal] = useState(false);
+
+  useEffect(() => {
+    const fetchProvider = async () => {
+      try {
+        setLoading(true);
+        // If an ID is passed, fetch that specific provider. Otherwise, grab the first one (useful for testing with dummy data).
+        const url = id 
+          ? `http://localhost:3000/providers/${id}` 
+          : 'http://localhost:3000/providers';
+          
+        const response = await fetch(url);
+        if (!response.ok) throw new Error('Failed to fetch provider details');
+        
+        const data = await response.json();
+        setProvider(Array.isArray(data) ? data[0] : data);
+      } catch (err) {
+        console.error(err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProvider();
+  }, [id]);
 
   const handleBookClick = (service) => {
     setSelectedService(service);
     setShowBookingModal(true);
   };
+
+  if (loading) return <div className="provider-profile page-wrapper container flex-center" style={{ minHeight: '60vh' }}>Loading provider...</div>;
+  if (error) return <div className="provider-profile page-wrapper container flex-center text-danger" style={{ minHeight: '60vh' }}>{error}</div>;
+  if (!provider) return <div className="provider-profile page-wrapper container flex-center" style={{ minHeight: '60vh' }}>Provider not found.</div>;
 
   return (
     <div className="provider-profile page-wrapper container animate-fade-in">
@@ -33,25 +68,25 @@ function ProviderProfile() {
         
         <div className="profile-info-card glass-card">
           <div className="profile-title-group">
-            <h1>Fade & Flow Barbershop</h1>
-            <div className="badge badge-primary">Barbershop</div>
+            <h1>{provider.business_name}</h1>
+            <div className="badge badge-primary">{provider.category}</div>
           </div>
           
           <div className="profile-stats flex-center">
             <div className="stat-item flex-center">
               <Star size={16} className="star-icon" fill="currentColor" />
-              <span className="stat-value">4.9</span>
-              <span className="stat-label">(128 reviews)</span>
+              <span className="stat-value">{provider.avg_rating}</span>
+              <span className="stat-label">({provider.rating_count} reviews)</span>
             </div>
             <div className="stat-divider"></div>
             <div className="stat-item flex-center">
               <MapPin size={16} className="icon-muted" />
-              <span className="stat-label">Oxford Street, Osu, Accra</span>
+              <span className="stat-label">{provider.address}</span>
             </div>
           </div>
           
           <p className="profile-bio">
-            Premium grooming experience in the heart of the city. We specialize in classic cuts, modern fades, and straight razor shaves. Step in to relax, and step out looking your best.
+            {provider.bio}
           </p>
         </div>
       </div>
@@ -61,7 +96,7 @@ function ProviderProfile() {
           <h2>Services</h2>
           
           <div className="services-list">
-            {services.map(service => (
+            {provider.services?.map(service => (
               <div key={service.id} className="service-card glass-card">
                 <div className="service-info">
                   <h3>{service.name}</h3>
@@ -73,7 +108,7 @@ function ProviderProfile() {
                   </div>
                 </div>
                 <div className="service-action">
-                  <div className="service-price">{service.price}</div>
+                  <div className="service-price">₵{service.price}</div>
                   <button 
                     className="btn btn-primary"
                     onClick={() => handleBookClick(service)}
@@ -89,25 +124,24 @@ function ProviderProfile() {
         <div className="portfolio-section mt-4">
           <h2>Portfolio & Feed</h2>
           <div className="portfolio-grid">
-            {[1, 2, 3].map(post => (
-              <div key={post} className="post-card glass-card">
+            {provider.portfolio?.map(post => (
+              <div key={post.id} className="post-card glass-card">
                 <div className="post-image">
-                  <img 
-                    src={`https://images.unsplash.com/photo-${post === 1 ? '1622288432450-277d0fce5b95' : post === 2 ? '1599351431202-1e0f0137899a' : '1503739947424-688eb219f7cc'}?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80`} 
-                    alt="Work example" 
-                  />
-                  <div className="post-service-tag badge badge-primary">Signature Haircut</div>
+                  <img src={post.image_url} alt="Work example" />
+                  {post.service_tag && <div className="post-service-tag badge badge-primary">{post.service_tag}</div>}
                 </div>
                 <div className="post-content">
-                  <p className="post-caption">Clean fade with a sharp line up. Book now! 🔥</p>
+                  <p className="post-caption">{post.caption}</p>
                   <div className="post-actions flex-between">
                     <div className="action-group flex-center">
-                      <button className="action-btn flex-center"><Heart size={18} /> <span className="action-count">24</span></button>
-                      <button className="action-btn flex-center"><MessageSquare size={18} /> <span className="action-count">5</span></button>
+                      <button className="action-btn flex-center"><Heart size={18} /> <span className="action-count">{post.likes}</span></button>
+                      <button className="action-btn flex-center"><MessageSquare size={18} /> <span className="action-count">{post.comments}</span></button>
                     </div>
-                    <div className="post-rating flex-center">
-                      <Star size={16} fill="#f59e0b" color="#f59e0b" /> <span className="text-sm">4.8</span>
-                    </div>
+                    {post.rating && (
+                      <div className="post-rating flex-center">
+                        <Star size={16} fill="#f59e0b" color="#f59e0b" /> <span className="text-sm">{post.rating}</span>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -119,13 +153,16 @@ function ProviderProfile() {
           <div className="glass-card business-hours">
             <h3>Business Hours</h3>
             <ul className="hours-list">
-              <li className="flex-between"><span>Monday</span> <span className="text-muted">Closed</span></li>
-              <li className="flex-between"><span>Tuesday</span> <span>9:00 AM - 7:00 PM</span></li>
-              <li className="flex-between"><span>Wednesday</span> <span>9:00 AM - 7:00 PM</span></li>
-              <li className="flex-between"><span>Thursday</span> <span>9:00 AM - 8:00 PM</span></li>
-              <li className="flex-between"><span>Friday</span> <span>9:00 AM - 8:00 PM</span></li>
-              <li className="flex-between"><span>Saturday</span> <span>10:00 AM - 6:00 PM</span></li>
-              <li className="flex-between"><span>Sunday</span> <span>10:00 AM - 4:00 PM</span></li>
+              {provider.business_hours?.map(hour => (
+                <li key={hour.id} className="flex-between">
+                  <span>{hour.day_of_week}</span> 
+                  {hour.is_closed ? (
+                    <span className="text-muted">Closed</span>
+                  ) : (
+                    <span>{formatTime(hour.open_time)} - {formatTime(hour.close_time)}</span>
+                  )}
+                </li>
+              ))}
             </ul>
           </div>
         </div>
@@ -140,7 +177,7 @@ function ProviderProfile() {
             <div className="selected-service-summary glass">
               <div className="flex-between">
                 <h4>{selectedService?.name}</h4>
-                <span>{selectedService?.price}</span>
+                <span>₵{selectedService?.price}</span>
               </div>
               <div className="text-muted text-sm">{selectedService?.duration}</div>
             </div>

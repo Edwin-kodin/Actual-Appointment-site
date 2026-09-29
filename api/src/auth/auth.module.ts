@@ -14,7 +14,7 @@ import { UsersModule } from '../users/users.module.js';
       useFactory: async (configService: ConfigService) => ({
         secret: configService.get<string>('JWT_SECRET', 'super_secret_glowgh_key'),
         signOptions: { 
-          expiresIn: configService.get<string>('JWT_EXPIRES_IN', '7d') 
+          expiresIn: configService.get<string>('JWT_EXPIRES_IN', '7d') as any
         },
       }),
     }),
