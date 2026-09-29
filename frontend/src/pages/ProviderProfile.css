@@ -355,3 +355,65 @@
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
+.portfolio-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+.post-card {
+  overflow: hidden;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+.post-image {
+  position: relative;
+  width: 100%;
+  height: 280px;
+}
+.post-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.post-service-tag {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  backdrop-filter: blur(8px);
+}
+.post-content {
+  padding: 16px;
+}
+.post-caption {
+  font-size: 0.95rem;
+  margin-bottom: 16px;
+  color: var(--text-main);
+}
+.post-actions {
+  border-top: 1px solid var(--border-color);
+  padding-top: 12px;
+}
+.action-group {
+  gap: 16px;
+}
+.action-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  gap: 6px;
+  transition: color 0.2s;
+}
+.action-btn:hover {
+  color: var(--primary-light);
+}
+.action-count {
+  font-size: 0.9rem;
+}
+.mt-4 {
+  margin-top: 32px;
+}
+

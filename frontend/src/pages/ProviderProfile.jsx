@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Star, MapPin, Clock, ArrowLeft, Check, Calendar as CalendarIcon } from 'lucide-react';
+import { Star, MapPin, Clock, ArrowLeft, Check, Calendar as CalendarIcon, Heart, MessageSquare } from 'lucide-react';
 import './ProviderProfile.css';
 
 const services = [
@@ -86,7 +86,36 @@ function ProviderProfile() {
           </div>
         </div>
         
-        <div className="about-section">
+        <div className="portfolio-section mt-4">
+          <h2>Portfolio & Feed</h2>
+          <div className="portfolio-grid">
+            {[1, 2, 3].map(post => (
+              <div key={post} className="post-card glass-card">
+                <div className="post-image">
+                  <img 
+                    src={`https://images.unsplash.com/photo-${post === 1 ? '1622288432450-277d0fce5b95' : post === 2 ? '1599351431202-1e0f0137899a' : '1503739947424-688eb219f7cc'}?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80`} 
+                    alt="Work example" 
+                  />
+                  <div className="post-service-tag badge badge-primary">Signature Haircut</div>
+                </div>
+                <div className="post-content">
+                  <p className="post-caption">Clean fade with a sharp line up. Book now! 🔥</p>
+                  <div className="post-actions flex-between">
+                    <div className="action-group flex-center">
+                      <button className="action-btn flex-center"><Heart size={18} /> <span className="action-count">24</span></button>
+                      <button className="action-btn flex-center"><MessageSquare size={18} /> <span className="action-count">5</span></button>
+                    </div>
+                    <div className="post-rating flex-center">
+                      <Star size={16} fill="#f59e0b" color="#f59e0b" /> <span className="text-sm">4.8</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+        
+        <div className="about-section mt-4">
           <div className="glass-card business-hours">
             <h3>Business Hours</h3>
             <ul className="hours-list">
