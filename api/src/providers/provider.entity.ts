@@ -1,15 +1,15 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToOne, JoinColumn, OneToMany } from 'typeorm';
-import { User } from '../users/user.entity.js';
-import { Service } from './service.entity.js';
-import { PortfolioPost } from './portfolio-post.entity.js';
-import { BusinessHour } from './business-hour.entity.js';
+import type { User } from '../users/user.entity.js';
+import type { Service } from './service.entity.js';
+import type { PortfolioPost } from './portfolio-post.entity.js';
+import type { BusinessHour } from './business-hour.entity.js';
 
 @Entity('providers')
 export class Provider {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @OneToOne(() => User, (user) => user.providerProfile, { onDelete: 'CASCADE' })
+  @OneToOne('User', (user: User) => user.providerProfile, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id' })
   user: User;
 
@@ -52,12 +52,12 @@ export class Provider {
   @UpdateDateColumn()
   updated_at: Date;
 
-  @OneToMany(() => Service, service => service.provider, { cascade: true })
+  @OneToMany('Service', (service: Service) => service.provider, { cascade: true })
   services: Service[];
 
-  @OneToMany(() => PortfolioPost, post => post.provider, { cascade: true })
+  @OneToMany('PortfolioPost', (post: PortfolioPost) => post.provider, { cascade: true })
   portfolio: PortfolioPost[];
 
-  @OneToMany(() => BusinessHour, hour => hour.provider, { cascade: true })
+  @OneToMany('BusinessHour', (hour: BusinessHour) => hour.provider, { cascade: true })
   business_hours: BusinessHour[];
 }

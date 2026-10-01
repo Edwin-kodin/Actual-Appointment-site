@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Search, MapPin, Star, Filter, ArrowRight } from 'lucide-react';
 import './SearchPage.css';
@@ -38,6 +38,28 @@ const mockProviders = [
 
 function SearchPage() {
   const [searchQuery, setSearchQuery] = useState('');
+  const [providers, setProviders] = useState(mockProviders);
+
+  useEffect(() => {
+    fetch('http://localhost:3000/providers')
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data) && data.length > 0) {
+          const formatted = data.map(p => ({
+            id: p.id,
+            name: p.business_name,
+            type: p.category,
+            rating: p.avg_rating || 0,
+            reviews: p.rating_count || 0,
+            distance: 'Near you',
+            image: (p.portfolio?.[0]?.image_url && !p.portfolio[0].image_url.includes('unsplash')) ? p.portfolio[0].image_url : '/images/barbershop_cover.jpg',
+            tags: p.services?.slice(0, 3).map(s => s.name) || []
+          }));
+          setProviders(formatted);
+        }
+      })
+      .catch(err => console.error('Failed to fetch providers:', err));
+  }, []);
 
   return (
     <div className="search-page">
@@ -87,14 +109,14 @@ function SearchPage() {
       <div className="search-layout container">
         <div className="results-section">
           <div className="results-header flex-between">
-            <h2>{mockProviders.length} professionals nearby</h2>
+            <h2>{providers.length} professionals nearby</h2>
             <button className="btn btn-secondary filter-btn">
               <Filter size={16} /> Filters
             </button>
           </div>
           
           <div className="providers-grid">
-            {mockProviders.map((provider) => (
+            {providers.map((provider) => (
               <Link to={`/provider/${provider.id}`} key={provider.id} className="provider-card glass-card">
                 <div className="provider-image-container">
                   <img src={provider.image} alt={provider.name} className="provider-image" />

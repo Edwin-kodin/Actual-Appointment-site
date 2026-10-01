@@ -1,12 +1,12 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
-import { Provider } from './provider.entity.js';
+import type { Provider } from './provider.entity.js';
 
 @Entity('portfolio_posts')
 export class PortfolioPost {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => Provider, provider => provider.portfolio, { onDelete: 'CASCADE' })
+  @ManyToOne('Provider', (provider: Provider) => provider.portfolio, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'provider_id' })
   provider: Provider;
 

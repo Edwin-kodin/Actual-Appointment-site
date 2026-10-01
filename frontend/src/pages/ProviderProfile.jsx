@@ -63,7 +63,7 @@ function ProviderProfile() {
       
       <div className="profile-header">
         <div className="profile-cover">
-          <img src="https://images.unsplash.com/photo-1585747860715-2ba37e788b70?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Cover" />
+          <img src="/images/barbershop_cover.jpg" alt="Cover" />
         </div>
         
         <div className="profile-info-card glass-card">
@@ -127,7 +127,7 @@ function ProviderProfile() {
             {provider.portfolio?.map(post => (
               <div key={post.id} className="post-card glass-card">
                 <div className="post-image">
-                  <img src={post.image_url} alt="Work example" />
+                  <img src={post.image_url.includes('unsplash') ? (post.service_tag === 'Beard Trim' ? '/images/beard_trim.jpg' : '/images/fade_haircut.jpg') : post.image_url} alt="Work example" />
                   {post.service_tag && <div className="post-service-tag badge badge-primary">{post.service_tag}</div>}
                 </div>
                 <div className="post-content">

@@ -1,12 +1,12 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
-import { Provider } from './provider.entity.js';
+import type { Provider } from './provider.entity.js';
 
 @Entity('business_hours')
 export class BusinessHour {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => Provider, provider => provider.business_hours, { onDelete: 'CASCADE' })
+  @ManyToOne('Provider', (provider: Provider) => provider.business_hours, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'provider_id' })
   provider: Provider;
 

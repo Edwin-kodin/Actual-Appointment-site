@@ -15,19 +15,19 @@ function Navbar() {
         </Link>
         
         <div className="nav-actions flex-center">
-          <div className="search-trigger flex-center">
+          <Link to="/" className="search-trigger flex-center" style={{ textDecoration: 'none', color: 'inherit' }}>
             <Search size={18} />
             <span>Search</span>
-          </div>
+          </Link>
           
-          <button className="btn btn-secondary nav-login">
+          <Link to="/login" className="btn btn-secondary nav-login" style={{ textDecoration: 'none' }}>
             <User size={16} />
             <span>Sign In</span>
-          </button>
+          </Link>
           
-          <button className="btn btn-primary nav-signup">
+          <Link to="/login" className="btn btn-primary nav-signup" style={{ textDecoration: 'none' }}>
             For Professionals
-          </button>
+          </Link>
           
           <button className="mobile-menu-btn">
             <Menu size={24} />

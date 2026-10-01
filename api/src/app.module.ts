@@ -21,7 +21,7 @@ import { ProvidersModule } from './providers/providers.module.js';
         username: configService.get<string>('DB_USER', 'postgres'),
         password: configService.get<string>('DB_PASSWORD', 'password'),
         database: configService.get<string>('DB_NAME', 'glowgh'),
-        entities: [__dirname + '/**/*.entity{.ts,.js}'],
+        autoLoadEntities: true,
         synchronize: true, // Use this for dev only!
       }),
       inject: [ConfigService],
