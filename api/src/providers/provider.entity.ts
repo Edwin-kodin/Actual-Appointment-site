@@ -26,13 +26,8 @@ export class Provider {
   address: string;
 
   // For PostGIS geolocation
-  @Column({
-    type: 'geography',
-    spatialFeatureType: 'Point',
-    srid: 4326,
-    nullable: true,
-  })
-  location: string; // TypeORM handles the translation to/from PostGIS format
+  @Column({ type: 'text', nullable: true })
+  location: string; // Changed to text for SQLite compatibility
 
   @Column({ default: false })
   verified: boolean;

@@ -12,8 +12,12 @@ export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ unique: true, length: 20 })
-  phone: string;
+  @Column({ unique: true, length: 100 })
+  email: string;
+
+  @Column({ length: 255 })
+  password: string;
+
 
   @Column({ length: 100, nullable: true })
   name: string;
@@ -25,8 +29,14 @@ export class User {
   })
   role: UserRole;
 
-  @Column({ type: 'text', nullable: true })
+  @Column({ type: 'longtext', nullable: true })
   avatar_url: string;
+
+  @Column({ type: 'text', nullable: true })
+  bio: string;
+
+  @Column({ type: 'text', nullable: true })
+  location: string;
 
   @OneToOne('Provider', (provider: Provider) => provider.user)
   providerProfile: Provider;

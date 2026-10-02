@@ -15,11 +15,11 @@ import { ProvidersModule } from './providers/providers.module.js';
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
-        type: 'postgres',
+        type: 'mysql',
         host: configService.get<string>('DB_HOST', 'localhost'),
-        port: configService.get<number>('DB_PORT', 5432),
-        username: configService.get<string>('DB_USER', 'postgres'),
-        password: configService.get<string>('DB_PASSWORD', 'password'),
+        port: configService.get<number>('DB_PORT', 3306),
+        username: configService.get<string>('DB_USER', 'root'),
+        password: configService.get<string>('DB_PASSWORD', ''),
         database: configService.get<string>('DB_NAME', 'glowgh'),
         autoLoadEntities: true,
         synchronize: true, // Use this for dev only!

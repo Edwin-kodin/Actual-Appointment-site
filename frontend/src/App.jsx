@@ -4,6 +4,8 @@ import Navbar from './components/Navbar';
 import SearchPage from './pages/SearchPage';
 import ProviderProfile from './pages/ProviderProfile';
 import LoginPage from './pages/LoginPage';
+import ClientDashboard from './pages/ClientDashboard';
+import ProviderDashboard from './pages/ProviderDashboard';
 
 function App() {
   return (
@@ -15,6 +17,8 @@ function App() {
             <Route path="/" element={<SearchPage />} />
             <Route path="/provider/:id" element={<ProviderProfile />} />
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/client-dashboard" element={<ClientDashboard />} />
+            <Route path="/provider-dashboard" element={<ProviderDashboard />} />
           </Routes>
         </main>
       </div>

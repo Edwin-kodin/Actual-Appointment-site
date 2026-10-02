@@ -5,15 +5,14 @@ import { AuthService } from './auth.service.js';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Post('otp/request')
-  @HttpCode(HttpStatus.OK)
-  async requestOtp(@Body('phone') phone: string) {
-    return this.authService.requestOtp(phone);
+  @Post('register')
+  async register(@Body() registerDto: any) {
+    return this.authService.register(registerDto);
   }
 
-  @Post('otp/verify')
+  @Post('login')
   @HttpCode(HttpStatus.OK)
-  async verifyOtp(@Body('phone') phone: string, @Body('code') code: string) {
-    return this.authService.verifyOtp(phone, code);
+  async login(@Body() loginDto: any) {
+    return this.authService.login(loginDto);
   }
 }

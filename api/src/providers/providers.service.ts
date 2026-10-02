@@ -37,6 +37,14 @@ export class ProvidersService {
     return provider;
   }
 
+  async create(providerData: Partial<Provider>, user: any): Promise<Provider> {
+    const provider = this.providersRepository.create({
+      ...providerData,
+      user,
+    });
+    return this.providersRepository.save(provider);
+  }
+
   async seed() {
     const provider = this.providersRepository.create({
       business_name: 'Fade & Flow Barbershop',

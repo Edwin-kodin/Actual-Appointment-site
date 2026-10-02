@@ -8,6 +8,7 @@ function LoginPage() {
   const [accountType, setAccountType] = useState('client');
   const [loadingLocation, setLoadingLocation] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [imagePreview, setImagePreview] = useState(null);
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -27,7 +28,15 @@ function LoginPage() {
   };
 
   const handleFileChange = (e) => {
-    setFormData(prev => ({ ...prev, profilePic: e.target.files[0] }));
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+        setFormData(prev => ({ ...prev, profilePic: reader.result }));
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleGetLocation = () => {
@@ -35,11 +44,17 @@ function LoginPage() {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          // Mock reverse geocoding for UI purposes
-          setTimeout(() => {
-            setFormData(prev => ({ ...prev, location: 'Osu, Accra (Pinned)' }));
-            setLoadingLocation(false);
-          }, 800);
+          fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${position.coords.latitude}&lon=${position.coords.longitude}`)
+            .then(res => res.json())
+            .then(data => {
+              setFormData(prev => ({ ...prev, location: data.display_name || `${position.coords.latitude}, ${position.coords.longitude}` }));
+              setLoadingLocation(false);
+            })
+            .catch(err => {
+              console.error("Geocoding error", err);
+              setFormData(prev => ({ ...prev, location: `${position.coords.latitude}, ${position.coords.longitude}` }));
+              setLoadingLocation(false);
+            });
         },
         (error) => {
           console.error("Error getting location", error);
@@ -52,13 +67,53 @@ function LoginPage() {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setSuccess(true);
-    setTimeout(() => {
-      // Redirect to home/search page with location parameters applied (mocked)
-      navigate('/');
-    }, 1500);
+    setSuccess(false);
+    
+    try {
+      const endpoint = isLogin ? 'http://localhost:3000/auth/login' : 'http://localhost:3000/auth/register';
+      
+      const payload = {
+        email: formData.email,
+        password: formData.password,
+        name: formData.name,
+        accountType: accountType,
+        location: formData.location,
+        bio: formData.bio,
+        profilePic: formData.profilePic,
+        businessName: formData.businessName,
+        category: formData.category
+      };
+
+      const res = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.message || 'Authentication failed');
+      }
+
+      const data = await res.json();
+      // Store token in localStorage
+      localStorage.setItem('access_token', data.access_token);
+      localStorage.setItem('user', JSON.stringify(data.user));
+
+      setSuccess(true);
+      setTimeout(() => {
+        if (data.user.role === 'provider') {
+          navigate('/provider-dashboard');
+        } else {
+          navigate('/client-dashboard');
+        }
+      }, 1500);
+    } catch (err) {
+      console.error(err);
+      alert(err.message); // simple error handling for now
+    }
   };
 
   if (success) {
@@ -132,9 +187,13 @@ function LoginPage() {
 
               <div className="form-group">
                 <label>Profile Picture</label>
-                <div className="file-input-wrapper">
-                  <ImageIcon size={18} className="text-muted mr-2" />
-                  <input type="file" accept="image/*" onChange={handleFileChange} className="file-input" required />
+                <div className="file-input-wrapper" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  {imagePreview ? (
+                    <img src={imagePreview} alt="Preview" style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover' }} />
+                  ) : (
+                    <ImageIcon size={18} className="text-muted mr-2" />
+                  )}
+                  <input type="file" accept="image/*" capture="user" onChange={handleFileChange} className="file-input" style={{ flex: 1 }} required />
                 </div>
               </div>
 
