@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Provider } from './provider.entity.js';
+import { PortfolioPost } from './portfolio-post.entity.js';
 
 @Injectable()
 export class ProvidersService {
@@ -43,6 +44,32 @@ export class ProvidersService {
       user,
     });
     return this.providersRepository.save(provider);
+  }
+
+  async likePortfolioPost(postId: string) {
+    const post = await this.providersRepository.manager.findOne(PortfolioPost, { where: { id: postId } });
+    if (!post) throw new NotFoundException('Post not found');
+    post.likes += 1;
+    return this.providersRepository.manager.save(post);
+  }
+
+  async commentPortfolioPost(postId: string, text: string, user: any) {
+    const post = await this.providersRepository.manager.findOne(PortfolioPost, { where: { id: postId } });
+    if (!post) throw new NotFoundException('Post not found');
+    
+    const commentsList = post.comments_list || [];
+    const newComment = {
+      id: new Date().getTime().toString(),
+      userName: user?.name || 'Guest',
+      text,
+      createdAt: new Date().toISOString()
+    };
+    
+    commentsList.push(newComment);
+    post.comments_list = commentsList;
+    post.comments = commentsList.length;
+    
+    return this.providersRepository.manager.save(post);
   }
 
   async seed() {

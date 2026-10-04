@@ -31,6 +31,11 @@ const customIcon = new L.Icon({
 const MapWidget = ({ locations, center, zoom = 13, height = '400px' }) => {
   return (
     <div style={{ height, width: '100%', borderRadius: '16px', overflow: 'hidden', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
+      <style>{`
+        .leaflet-tile {
+          filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
+        }
+      `}</style>
       <MapContainer 
         center={center} 
         zoom={zoom} 
@@ -38,10 +43,9 @@ const MapWidget = ({ locations, center, zoom = 13, height = '400px' }) => {
         style={{ height: '100%', width: '100%', background: '#1a1a2e' }}
       >
         <ChangeView center={center} zoom={zoom} />
-        {/* Dark theme OpenStreetMap tiles via CartoDB */}
         <TileLayer
-          url="https://{s}.basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}{r}.png"
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution='&copy; OpenStreetMap contributors'
         />
         {locations.map((loc, idx) => (
           <Marker 

@@ -25,6 +25,9 @@ export class PortfolioPost {
   @Column({ type: 'int', default: 0 })
   comments: number;
 
+  @Column({ type: 'json', nullable: true })
+  comments_list: any;
+
   @Column({ type: 'numeric', precision: 3, scale: 2, nullable: true })
   rating: number;
 

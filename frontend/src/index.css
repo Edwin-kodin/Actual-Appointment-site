@@ -171,6 +171,10 @@ a {
   justify-content: center;
 }
 
+.flex-column {
+  flex-direction: column;
+}
+
 .flex-between {
   display: flex;
   align-items: center;

@@ -6,12 +6,15 @@ import { AppService } from './app.service.js';
 import { AuthModule } from './auth/auth.module.js';
 import { UsersModule } from './users/users.module.js';
 import { ProvidersModule } from './providers/providers.module.js';
+import { AppointmentsModule } from './appointments/appointments.module.js';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    ScheduleModule.forRoot(),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
@@ -29,6 +32,7 @@ import { ProvidersModule } from './providers/providers.module.js';
     AuthModule,
     UsersModule,
     ProvidersModule,
+    AppointmentsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

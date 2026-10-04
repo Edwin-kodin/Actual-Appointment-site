@@ -10,6 +10,8 @@ import './Dashboard.css';
 function ProviderDashboard() {
   const [user, setUser] = useState(null);
   const [activeTab, setActiveTab] = useState('overview');
+  const [appointments, setAppointments] = useState([]);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   // Mock coordinates
@@ -22,12 +24,31 @@ function ProviderDashboard() {
 
   useEffect(() => {
     const userData = localStorage.getItem('user');
+    // For prototype purposes, mock the provider user if not strictly logged in
     if (!userData) {
-      navigate('/login');
+      const mockProvider = { name: 'Fade & Flow', businessName: 'Fade & Flow Barbershop', id: '5ae2a1de-53bb-4b39-b1e2-2da0079a221e' };
+      localStorage.setItem('user', JSON.stringify(mockProvider));
+      setUser(mockProvider);
     } else {
       setUser(JSON.parse(userData));
     }
   }, [navigate]);
+
+  useEffect(() => {
+    if (user && activeTab === 'overview') {
+      setLoading(true);
+      fetch('http://localhost:3000/appointments/provider')
+        .then(res => res.json())
+        .then(data => {
+          setAppointments(data);
+          setLoading(false);
+        })
+        .catch(err => {
+          console.error(err);
+          setLoading(false);
+        });
+    }
+  }, [user, activeTab]);
 
   const handleLogout = () => {
     localStorage.removeItem('access_token');
@@ -160,12 +181,34 @@ function ProviderDashboard() {
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <td colSpan="4" className="text-center py-5 text-muted">
-                        <CheckCircle2 size={40} className="mb-2 mx-auto opacity-50" />
-                        <p>No appointments for today. You're all caught up!</p>
-                      </td>
-                    </tr>
+                    {loading ? (
+                      <tr>
+                        <td colSpan="4" className="text-center py-5 text-muted">Loading schedule...</td>
+                      </tr>
+                    ) : appointments.length === 0 ? (
+                      <tr>
+                        <td colSpan="4" className="text-center py-5 text-muted">
+                          <CheckCircle2 size={40} className="mb-2 mx-auto opacity-50" />
+                          <p>No appointments for today. You're all caught up!</p>
+                        </td>
+                      </tr>
+                    ) : (
+                      appointments.map(apt => (
+                        <tr key={apt.id}>
+                          <td>{apt.user?.name || 'Guest'}</td>
+                          <td>{apt.service?.name}</td>
+                          <td>
+                            {new Date(apt.start_time).toLocaleDateString()} <br/>
+                            <span className="text-muted text-sm">{new Date(apt.start_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                          </td>
+                          <td>
+                            <div className="badge" style={{ background: apt.status === 'confirmed' ? 'rgba(16, 185, 129, 0.2)' : 'rgba(245, 158, 11, 0.2)', color: apt.status === 'confirmed' ? '#10b981' : '#f59e0b', fontSize: '0.75rem', padding: '4px 8px' }}>
+                              {apt.status}
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    )}
                   </tbody>
                 </table>
               </div>
